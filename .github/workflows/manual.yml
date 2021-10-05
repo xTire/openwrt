@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual workflowi for openwrt build
+name: Manual workflow for openwrt build
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -10,9 +10,9 @@ on:
     inputs:
       name:
         # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+        description: 'Person to build'
         # Default value if no value is explicitly provided
-        default: 'World'
+        default: 'build'
         # Input has to be provided for the workflow to run
         required: true
 
@@ -27,8 +27,8 @@ jobs:
     steps:
       - name: checkout
         run: actions/checkout@master
-        with:
-         ref: master
+        #with:
+        #    ref: master
     
       - name: Initialization environment
         env:
