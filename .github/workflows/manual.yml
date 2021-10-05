@@ -30,7 +30,8 @@ jobs:
       run: actions/checkout@master
       with:
         ref: master
-      - name: Initialization environment
+    
+    - name: Initialization environment
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -58,12 +59,12 @@ jobs:
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
 
-      - name: Update feeds
+    - name: Update feeds
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Costom configure file
+    - name: Costom configure file
         run: |
           rm -f ./.config*
           touch ./.config
@@ -199,24 +200,24 @@ jobs:
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
 
-      - name: Make download
+    - name: Make download
         run: |
           make download -j8
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
 
-      - name: Compile firmware
+    - name: Compile firmware
         run: |
           echo -e "$(nproc) thread build."
           make -j$(nproc) V=s
 
-      - name: Assemble artifact
+    - name: Assemble artifact
         run: |
           rm -rf ./artifact/
           mkdir -p ./artifact/
           find ./bin/targets/ -name "*combined*img*" | xargs -i mv -f {} ./artifact/
           find ./bin/targets/ -name "*sysupgrade*bin*" | xargs -i mv -f {} ./artifact/
 
-      - name: Upload artifact
+    - name: Upload artifact
         uses: actions/upload-artifact@master
         with:
