@@ -129,7 +129,7 @@ jobs:
            EOF
 
           # 常用LuCI插件选择:
-          # cat >> .config <<EOF
+          cat >> .config <<EOF
           # CONFIG_PACKAGE_luci-app-adbyby-plus=y
           # CONFIG_PACKAGE_luci-app-aria2=y
           # CONFIG_PACKAGE_luci-app-baidupcs-web=y
@@ -161,13 +161,13 @@ jobs:
           # EOF
 
           # 常用软件包:
-          # cat >> .config <<EOF
+          cat >> .config <<EOF
           CONFIG_PACKAGE_curl=y
           # CONFIG_PACKAGE_htop=y
           # CONFIG_PACKAGE_nano=y
           CONFIG_PACKAGE_tmux=y
           CONFIG_PACKAGE_tree=y
-          # CONFIG_PACKAGE_vim-full=y
+          CONFIG_PACKAGE_vim-full=y
           CONFIG_PACKAGE_wget=y
           EOF
 
