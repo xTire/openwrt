@@ -167,7 +167,7 @@ jobs:
           # CONFIG_PACKAGE_nano=y
           CONFIG_PACKAGE_tmux=y
           CONFIG_PACKAGE_tree=y
-          CONFIG_PACKAGE_vim-full=y
+          # CONFIG_PACKAGE_vim-full=y
           CONFIG_PACKAGE_wget=y
           EOF
 
