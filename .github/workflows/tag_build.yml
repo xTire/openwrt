@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual workflow for openwrt tag build
+name: openwrt tag v21.02.0 build
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
