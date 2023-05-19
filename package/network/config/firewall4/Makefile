@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=firewall4
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firewall4.git
-PKG_SOURCE_DATE:=2022-01-09
-PKG_SOURCE_VERSION:=07579df54f38d75afea44b2a3b41a6d9af9497a1
-PKG_MIRROR_HASH:=3326e5e9fd53fe9f679b62cdada83aea4951aefe95ed6d2b5eca5a4695add45c
+PKG_SOURCE_DATE:=2023-03-23
+PKG_SOURCE_VERSION:=04a06bd70b9808b14444cae81a2faba4708ee231
+PKG_MIRROR_HASH:=37c34facb733c50d0fdbfa238765a23e667e4daaae9728aaccbaba87a2a07bb9
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
 
@@ -23,9 +23,10 @@ define Package/firewall4
   TITLE:=OpenWrt 4th gen firewall
   DEPENDS:= \
 	+kmod-nft-core +kmod-nft-fib +kmod-nft-offload \
-	+kmod-nft-nat +kmod-nft-nat6 \
+	+kmod-nft-nat \
 	+nftables-json \
 	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
+  EXTRA_DEPENDS:=ucode (>= 2022-03-22)
   PROVIDES:=uci-firewall
 endef
 

@@ -1,25 +1,35 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zstd
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.5.5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/facebook/zstd/releases/download/v$(PKG_VERSION)
-PKG_HASH:=5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94
+PKG_HASH:=9c4396cc829cfae319a6e2615202e82aad41372073482fce286fac78646d3ee4
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:facebook:zstandard
 
-CMAKE_SOURCE_SUBDIR:=build/cmake
-
 include $(INCLUDE_DIR)/host-build.mk
-include $(INCLUDE_DIR)/cmake.mk
+include $(INCLUDE_DIR)/meson.mk
 
-CMAKE_HOST_OPTIONS += \
-	-DBUILD_TESTING=OFF \
-	-DCMAKE_C_COMPILER_LAUNCHER="" \
-	-DCMAKE_C_COMPILER=$(HOSTCC_NOCACHE) \
-	-DZSTD_LEGACY_SUPPORT=OFF
+MESON_HOST_BUILD_DIR:=$(HOST_BUILD_DIR)/build/meson/openwrt-build
+
+HOSTCC:= $(HOSTCC_NOCACHE)
+
+MESON_HOST_ARGS += \
+	-Ddefault_library=static \
+	-Dlegacy_level=7 \
+	-Ddebug_level=0 \
+	-Dbacktrace=disabled \
+	-Dstatic_runtime=false \
+	-Dbin_programs=true \
+	-Dbin_tests=false \
+	-Dbin_contrib=false \
+	-Dmulti_thread=enabled \
+	-Dzlib=disabled \
+	-Dlzma=disabled \
+	-Dlz4=disabled
 
 $(eval $(call HostBuild))

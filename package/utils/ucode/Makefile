@@ -12,23 +12,37 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/jow-/ucode.git
-PKG_SOURCE_DATE:=2021-10-25
-PKG_SOURCE_VERSION:=a7976c2802a9da737f62bec496c7115211c442a7
-PKG_MIRROR_HASH:=6bc3ddeef41d68fd96894957356472e576c625fcf7277cbb36aa464b8d3c274d
+PKG_SOURCE_DATE:=2023-04-03
+PKG_SOURCE_VERSION:=5163867269fc04fa01ec5e9f8df3384c933339f2
+PKG_MIRROR_HASH:=e82922ff59d6f899d9434bf79f2e6e4add0b7b0466355755fc83d4b5a0aeebfb
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
 
-PKG_ABI_VERSION:=20210730
+PKG_ABI_VERSION:=20220812
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 CMAKE_OPTIONS += -DSOVERSION=$(PKG_ABI_VERSION)
+CMAKE_HOST_OPTIONS += \
+	-DSOVERSION=$(PKG_ABI_VERSION) \
+	-DFS_SUPPORT=ON \
+	-DMATH_SUPPORT=ON \
+	-DNL80211_SUPPORT=OFF \
+	-DRESOLV_SUPPORT=OFF \
+	-DRTNL_SUPPORT=OFF \
+	-DSTRUCT_SUPPORT=ON \
+	-DUBUS_SUPPORT=OFF \
+	-DUCI_SUPPORT=OFF \
+	-DULOOP_SUPPORT=OFF
+
 
 define Package/ucode/default
-  SECTION:=utils
-  CATEGORY:=Utilities
-  TITLE:=ucode - Tiny scripting and templating language
+  SUBMENU:=ucode
+  SECTION:=lang
+  CATEGORY:=Languages
+  TITLE:=Tiny scripting and templating language
 endef
 
 define Package/ucode
@@ -44,7 +58,10 @@ endef
 
 define Package/libucode
   $(Package/ucode/default)
-  TITLE+= - runtime library
+  SUBMENU:=
+  SECTION:=libs
+  CATEGORY:=Libraries
+  TITLE+= (library)
   ABI_VERSION:=$(PKG_ABI_VERSION)
   DEPENDS:=+libjson-c
 endef
@@ -79,7 +96,7 @@ endef
 define Package/ucode-mod-nl80211
   $(Package/ucode/default)
   TITLE+= (nl80211 module)
-  DEPENDS:=ucode +libnl-tiny
+  DEPENDS:=ucode +libnl-tiny +libubox
 endef
 
 define Package/ucode-mod-nl80211/description
@@ -101,11 +118,22 @@ endef
 define Package/ucode-mod-rtnl
   $(Package/ucode/default)
   TITLE+= (rtnl module)
-  DEPENDS:=ucode +libnl-tiny
+  DEPENDS:=ucode +libnl-tiny +libubox
 endef
 
 define Package/ucode-mod-rtnl/description
  The rtnl plugin provides access to the Linux routing netlink API.
+endef
+
+
+define Package/ucode-mod-struct
+  $(Package/ucode/default)
+  TITLE+= (struct module)
+  DEPENDS:=ucode
+endef
+
+define Package/ucode-mod-struct/description
+ The struct plugin implements Python 3 compatible struct.pack/unpack functionality.
 endef
 
 
@@ -132,6 +160,18 @@ define Package/ucode-mod-uci/description
 endef
 
 
+define Package/ucode-mod-uloop
+  $(Package/ucode/default)
+  TITLE+= (uloop module)
+  DEPENDS:=ucode +libubox
+endef
+
+define Package/ucode-mod-uloop/description
+ The uloop module allows ucode scripts to interact with OpenWrt uloop event
+ loop implementation.
+endef
+
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include/ucode
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/ucode/*.h $(1)/usr/include/ucode/
@@ -141,7 +181,7 @@ endef
 
 define Package/ucode/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/ucode $(1)/usr/bin/ucode
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/u* $(1)/usr/bin/
 endef
 
 define Package/libucode/install
@@ -174,6 +214,11 @@ define Package/ucode-mod-rtnl/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ucode/rtnl.so $(1)/usr/lib/ucode/
 endef
 
+define Package/ucode-mod-struct/install
+	$(INSTALL_DIR) $(1)/usr/lib/ucode
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ucode/struct.so $(1)/usr/lib/ucode/
+endef
+
 define Package/ucode-mod-ubus/install
 	$(INSTALL_DIR) $(1)/usr/lib/ucode
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ucode/ubus.so $(1)/usr/lib/ucode/
@@ -184,13 +229,20 @@ define Package/ucode-mod-uci/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ucode/uci.so $(1)/usr/lib/ucode/
 endef
 
+define Package/ucode-mod-uloop/install
+	$(INSTALL_DIR) $(1)/usr/lib/ucode
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/ucode/uloop.so $(1)/usr/lib/ucode/
+endef
 
-$(eval $(call BuildPackage,ucode))
 $(eval $(call BuildPackage,libucode))
+$(eval $(call BuildPackage,ucode))
 $(eval $(call BuildPackage,ucode-mod-fs))
 $(eval $(call BuildPackage,ucode-mod-math))
 $(eval $(call BuildPackage,ucode-mod-nl80211))
 $(eval $(call BuildPackage,ucode-mod-resolv))
 $(eval $(call BuildPackage,ucode-mod-rtnl))
+$(eval $(call BuildPackage,ucode-mod-struct))
 $(eval $(call BuildPackage,ucode-mod-ubus))
 $(eval $(call BuildPackage,ucode-mod-uci))
+$(eval $(call BuildPackage,ucode-mod-uloop))
+$(eval $(call HostBuild))
